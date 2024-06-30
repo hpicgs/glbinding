@@ -43,9 +43,11 @@ include(GenerateExportHeader)
 set(WriterCompilerDetectionHeaderFound NOTFOUND)
 # This module is only available with CMake >=3.1, so check whether it could be found
 # BUT in CMake 3.1 this module doesn't recognize AppleClang as compiler, so just use it as of CMake 3.2
+#[[ deprecated CMake module
 if (${CMAKE_VERSION} VERSION_GREATER "3.2")
     include(WriteCompilerDetectionHeader OPTIONAL RESULT_VARIABLE WriterCompilerDetectionHeaderFound)
 endif()
+]]
 
 if (${CMAKE_VERSION} VERSION_GREATER "3.9")
     include(CheckIPOSupported OPTIONAL RESULT_VARIABLE CheckIPOSupportedFound)

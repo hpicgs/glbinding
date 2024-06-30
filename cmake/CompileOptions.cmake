@@ -105,8 +105,10 @@ if (MSVC)
     )
 endif ()
 
-# GCC and Clang compiler options
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND NOT MSVC)
+# GCC, Clang and IntelLLVM compiler options
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR 
+    "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR
+    "${CMAKE_CXX_COMPILER_ID}" MATCHES "IntelLLVM" AND NOT MSVC)
     set(DEFAULT_COMPILE_OPTIONS_PRIVATE ${DEFAULT_COMPILE_OPTIONS_PRIVATE}
         #-fno-exceptions # since we use stl and stl is intended to use exceptions, exceptions should not be disabled
 
@@ -145,6 +147,13 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 
             # -Wreturn-stack-address # gives false positives
         >
+
+        $<$<CXX_COMPILER_ID:IntelLLVM>:
+            -Wmaybe-uninitialized
+            -Wno-unknown-pragmas
+            -Wpedantic
+            -Wreturn-local-addr
+        >         
     )
     set(DEFAULT_COMPILE_OPTIONS_PUBLIC ${DEFAULT_COMPILE_OPTIONS_PUBLIC}
         $<$<PLATFORM_ID:Darwin>:
