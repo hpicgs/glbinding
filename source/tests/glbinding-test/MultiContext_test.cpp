@@ -5,15 +5,16 @@
 #include <GLFW/glfw3.h>
 
 #include <glbinding/AbstractFunction.h>
-#include <glbinding/Meta.h>
-#include <glbinding/ContextInfo.h>
 #include <glbinding/Version.h>
 #include <glbinding/Binding.h>
+#include <glbinding/glbinding.h>
+#include <glbinding-aux/ContextInfo.h>
 
 #include <glbinding/gl/gl.h>
 
 using namespace gl;
 using namespace glbinding;
+using namespace aux;
 
 class MultiContext_test : public testing::Test
 {
@@ -54,7 +55,9 @@ TEST_F(MultiContext_test, Test)
     EXPECT_NE(nullptr, window2);
 
     glfwMakeContextCurrent(window1);
-    Binding::initialize(false);
+    glbinding::initialize(0, [](const char * name) {
+        return glfwGetProcAddress(name);
+    });
 
 #ifdef  SYSTEM_WINDOWS
     EXPECT_EQ(Version(3, 2), ContextInfo::version());
@@ -67,11 +70,13 @@ TEST_F(MultiContext_test, Test)
 #endif
 
     glfwMakeContextCurrent(window2);
-    Binding::initialize(false);
+    glbinding::initialize(1, [](const char * name) {
+           return glfwGetProcAddress(name);
+    });
 
-    Binding::releaseCurrentContext();
+    Binding::releaseContext(1);
     glfwMakeContextCurrent(window1);
-    Binding::releaseCurrentContext();
+    Binding::releaseContext(2);
 
     glfwTerminate();
 }

@@ -6,10 +6,9 @@
 #include <GLFW/glfw3.h>
 
 #include <glbinding/AbstractFunction.h>
-#include <glbinding/Meta.h>
-#include <glbinding/ContextInfo.h>
 #include <glbinding/Version.h>
 #include <glbinding/Binding.h>
+#include <glbinding/glbinding.h>
 
 #include <glbinding/gl/gl.h>
 
@@ -60,7 +59,9 @@ TEST_F(MultiThreading_test, Test)
     std::thread t1([window1]() 
     {
         glfwMakeContextCurrent(window1);
-        Binding::initialize(false);
+        glbinding::initialize(0, [](const char * name) {
+            return glfwGetProcAddress(name);
+        });
 
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
@@ -82,7 +83,9 @@ TEST_F(MultiThreading_test, Test)
     std::thread t2([window2]() 
     {
         glfwMakeContextCurrent(window2);
-        Binding::initialize(false);
+        glbinding::initialize(1, [](const char * name) {
+            return glfwGetProcAddress(name);
+        });
 
         std::this_thread::sleep_for(std::chrono::milliseconds(4));
 
